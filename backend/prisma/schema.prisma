@@ -1,19 +1,16 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-model Task{
-  uuid String @id
-  title String @db.VarChar(255)
-  message String  @db.LongText()
+model task {
+  uuid      String   @id
+  title     String   @db.VarChar(255)
+  message   String   @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }

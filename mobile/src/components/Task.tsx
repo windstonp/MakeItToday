@@ -3,23 +3,26 @@ import { StyleSheet, Text, View, Animated, TouchableOpacity} from 'react-native'
 import { Entypo, AntDesign, Foundation, Feather } from '@expo/vector-icons'; 
 import { colors } from '../helpers/colors';
 
-export function Task(){
+interface Card{
+  title: string,
+}
+export function Task({title, ...rest}: Card){
   return(
     <View  style={styles.MessageContainer}>
       <View style={styles.cardMessage}>
         <Entypo name="new" size={32} color={colors.green}  style={styles.icon}/>
         <Text numberOfLines={1} style={styles.header}>
-          Lorem ipsum dolor sit. aaaaaaaaaaaaa
+          {title}
         </Text>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity activeOpacity={0.6} style={styles.expandContainer}>
+        <TouchableOpacity activeOpacity={0.6}>
           <Foundation name="trash" size={24} color={colors.red} />
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.6} style={styles.expandContainer}>
+        <TouchableOpacity activeOpacity={0.6}>
           <Feather name="chevrons-down" size={18} color={colors.white}  />
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.6} style={styles.expandContainer}>
+        <TouchableOpacity activeOpacity={0.6}>
           <AntDesign name="checkcircle" size={18} color={colors.light_green} />
         </TouchableOpacity>
       </View>

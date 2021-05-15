@@ -3,3 +3,7 @@ export interface TaskInterface{
   title: string,
   message?: string
 }
+export interface TaskProps{
+  Task: TaskInterface,
+  handleDelete: (uuid: string) => void,
+}

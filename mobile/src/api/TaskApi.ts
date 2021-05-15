@@ -27,3 +27,15 @@ export async function store(text: string){
   });
   return await response.json();
 }
+export async function update(uuid: string, title: string, message?: string){
+  const body = {title, message};
+  const response = await fetch(`http://192.168.25.108:3333/update/${uuid}`,{
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'PUT',
+    body: JSON.stringify(body)
+  });
+  return await response.json();
+}

@@ -1,52 +1,123 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput} from 'react-native';
 import { Entypo, AntDesign, Foundation, Feather } from '@expo/vector-icons'; 
 import { colors } from '../helpers/colors';
-import { TaskProps } from '../helpers/interfaces';
+import { TaskProps, TaskInterface } from '../helpers/interfaces';
+import { update } from '../api/TaskApi';
 
 
 export function Task({Task, handleDelete}: TaskProps){
-  const [show, setShow] = useState(false);
+  const [isShowing, setIsShowing] = useState<Boolean>(false);
+  const [isEditing, setIsEditing] = useState<Boolean>(false);
+  const [title, setTitle] = useState<string>(Task.title);
+  const [NewItem, setNewItem] = useState<TaskInterface>(Task);
+  const [message, setMessage] = useState<string>(Task.message ?? '');
 
   function toggleShowDescription(){
-    setShow(!show);
+    setIsShowing(!isShowing);
+  }
+  function handleEdit(){
+    setIsShowing(true);
+    setIsEditing(true);
+  }
+  function cancelEdit(){
+    setIsEditing(false);
+    setMessage(NewItem.message ?? '');
+    setTitle(NewItem.title);
+  }
+  async function handleSubmitEditForm(uuid: string, title: string, message?: string){
+    if(title){
+      const data: TaskInterface = await update(uuid,title, message);
+      setMessage(data.message ?? '');
+      setTitle(data.title);
+      setNewItem(data);
+      setIsEditing(false);
+    }
   }
   return(
     <View  style={styles.MessageContainer}>
-      <View style={styles.cardMessage}>
+      <View style={[styles.cardMessage, (isEditing) ? styles.editingHeader : []]}>
         <Entypo name="new" size={32} color={colors.white} style={styles.icon}/>
-        <Text numberOfLines={1} style={styles.header}>
-          {Task.title}
-        </Text>
+        {(!isEditing) ? (
+            <Text numberOfLines={1} style={styles.header}>
+              {title}
+            </Text>
+        ): (
+          <TextInput 
+            value={title}
+            placeholderTextColor={colors.white}
+            style={[styles.header, styles.titleForm]}
+            onChangeText={setTitle}
+          />
+        )}
       </View>
       {(Task.message)  ? (
-          <View style={(show) ? styles.showDescription : styles.hideDescription}>
-            <Text numberOfLines={3} style={styles.messageDescription}>
-              {Task.message}
-            </Text>
+          <View style={(isShowing) ? styles.showDescription : styles.hideDescription}>
+            {(!isEditing) ? (            
+              <Text numberOfLines={3} style={styles.messageDescription}>
+                {message}
+              </Text>
+            ) : (
+              <TextInput 
+                value={message}
+                placeholder="Message..."
+                placeholderTextColor={colors.white}
+                style={[styles.header, styles.descriptionForm]}
+                onChangeText={setMessage}
+                multiline={true}
+                numberOfLines={3}
+              />
+            )}
           </View>
       ) : (
-        <View style={(show) ? styles.showDescription : styles.hideDescription}>
-          <Text numberOfLines={3} style={styles.messageDescription}>
-            Edit this Task to add a description.
-          </Text>
+        <View style={(isShowing) ? styles.showDescription : styles.hideDescription}>
+          {(!isEditing) ? (            
+            <Text numberOfLines={3} style={styles.messageDescription}>
+              Edit this Task to add a description.
+            </Text>
+          ) : (
+            <TextInput 
+              value={message}
+              placeholder="Message..."
+              placeholderTextColor={colors.white}
+              style={[styles.header, styles.descriptionForm]}
+              onChangeText={setMessage}
+              multiline={true}
+              numberOfLines={3}
+            />
+          )}
         </View>
       )}
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity activeOpacity={0.6} onPress={()=>{handleDelete(Task.uuid)}}>
-          <Foundation name="trash" size={24} color={colors.white} />
-        </TouchableOpacity>
+        {(!isEditing) &&
+          <TouchableOpacity activeOpacity={0.6} onPress={()=>{handleDelete(Task.uuid)}}>
+            <Foundation name="trash" size={24} color={colors.white} />
+          </TouchableOpacity>
+        }
         <TouchableOpacity activeOpacity={0.6} onPress={toggleShowDescription}>
-          <Feather name={(show) ? "chevrons-up" : "chevrons-down"} size={18} color={colors.white}  />
+          <Feather name={(isShowing) ? "chevrons-up" : "chevrons-down"} size={18} color={colors.white}  />
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.6}>
-          <AntDesign name="checkcircle" size={18} color={colors.white}   onPress={()=>{handleDelete(Task.uuid)}}/>
-        </TouchableOpacity>
+        {(!isEditing) &&
+          <TouchableOpacity activeOpacity={0.6}>
+            <AntDesign name="checkcircle" size={18} color={colors.white}   onPress={()=>{handleDelete(Task.uuid)}}/>
+          </TouchableOpacity>
+        }
       </View>
-      <TouchableOpacity style={styles.editIcon} activeOpacity={0.6}>
-        <Feather name="edit" size={18} color={colors.white} />
-      </TouchableOpacity>
+      {(!isEditing) ? (
+        <TouchableOpacity style={styles.editIcon} activeOpacity={0.6} onPress={handleEdit}>
+          <Feather name="edit" size={18} color={colors.white} />
+        </TouchableOpacity>
+      ) : (
+        <>
+          <TouchableOpacity style={styles.confirmEdit} activeOpacity={0.6} onPress={()=>handleSubmitEditForm(Task.uuid, title, message)}>
+            <Feather name="check" size={18} color={colors.white} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelEdit} activeOpacity={0.6} onPress={cancelEdit}>
+            <Feather name="x" size={18} color={colors.white} />
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
@@ -84,7 +155,7 @@ const styles = StyleSheet.create({
   messageDescription:{
     fontSize: 14,
     color: colors.white,
-    textAlign: 'justify'
+    textAlign: 'justify',
   },
   icon: {
     paddingHorizontal: 10
@@ -99,5 +170,39 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10
+  },
+  confirmEdit:{
+    position: 'absolute',
+    top: 10,
+    right: 10
+  },
+  cancelEdit:{
+    position: 'absolute',
+    top: 10,
+    right: 40
+  },
+  descriptionForm:{
+    flex: 1, 
+    backgroundColor: colors.light_purple,
+    color: colors.white,
+    padding:5,
+    borderRadius: 5,
+    borderColor: colors.white,
+    borderWidth: 1,
+    fontSize: 18,
+  },
+  titleForm: {
+    flex: 1, 
+    backgroundColor: colors.light_purple,
+    color: colors.white,
+    padding: 5,
+    borderRadius: 5,
+    borderColor: colors.white,
+    borderWidth: 1,
+    fontSize: 18,
+    marginRight: 36,
+  },
+  editingHeader:{
+    marginTop: 40
   }
 })

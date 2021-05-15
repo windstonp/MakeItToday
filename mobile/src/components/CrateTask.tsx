@@ -21,7 +21,7 @@ export default function CreateTask({handleSubmit}: CreateTaskProps){
         <TextInput 
           value={task} 
           placeholder="Message..."
-          placeholderTextColor={colors.white}
+          placeholderTextColor={colors.light_green}
           style={styles.form}
           onChangeText={setTask}
         />
@@ -44,11 +44,11 @@ const styles = StyleSheet.create({
   form:{
     flex: 1, 
     backgroundColor: colors.light_purple,
-    color: colors.white,
+    color: colors.light_green,
     padding: 5,
     borderRadius: 5,
     marginRight: 20,
-    borderColor: colors.white,
+    borderColor: colors.light_green,
     borderWidth: 1,
     fontSize: 18,
   }

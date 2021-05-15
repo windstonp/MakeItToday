@@ -19,14 +19,14 @@ class TaskServices{
     }
   }
 
-  async Store({uuid, title, message}: Task){
+  async Store({uuid, title}: Task){
 
-    const validation = await this.taskValidator.Validate({uuid, title, message});
+    const validation = await this.taskValidator.Validate({uuid, title});
     if(validation){
       try{
-        const items = await this.taskRepository.Store({uuid, title, message});
+        const items = await this.taskRepository.Store({uuid, title});
         return items;
-      }catch{
+      }catch(e){
         throw new Error("oops, something is wrong with your request");
       }
     }

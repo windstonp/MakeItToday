@@ -10,7 +10,7 @@ datasource db {
 model task {
   uuid      String   @id
   title     String   @db.VarChar(255)
-  message   String   @db.LongText
+  message   String?  @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }

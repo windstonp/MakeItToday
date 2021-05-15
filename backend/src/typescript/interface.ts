@@ -2,5 +2,5 @@
 export  interface Task {
   uuid: string,
   title: string,
-  message: string,
+  message?: string,
 }

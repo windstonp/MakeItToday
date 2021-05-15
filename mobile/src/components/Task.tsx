@@ -51,7 +51,7 @@ export function Task({Task, handleDelete}: TaskProps){
           />
         )}
       </View>
-      {(Task.message)  ? (
+      {(message)  ? (
           <View style={(isShowing) ? styles.showDescription : styles.hideDescription}>
             {(!isEditing) ? (            
               <Text numberOfLines={3} style={styles.messageDescription}>

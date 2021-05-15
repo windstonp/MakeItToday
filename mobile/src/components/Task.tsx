@@ -1,22 +1,25 @@
 import React from 'react';
-import { StyleSheet, Text, View, Animated, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import { Entypo, AntDesign, Foundation, Feather } from '@expo/vector-icons'; 
 import { colors } from '../helpers/colors';
+import { TaskInterface } from '../helpers/interfaces';
 
-interface Card{
-  title: string,
+interface TaskProps{
+  Task: TaskInterface,
+  handleDelete: (uuid: string) => void,
 }
-export function Task({title, ...rest}: Card){
+export function Task({Task, handleDelete}: TaskProps){
+
   return(
     <View  style={styles.MessageContainer}>
       <View style={styles.cardMessage}>
         <Entypo name="new" size={32} color={colors.green}  style={styles.icon}/>
         <Text numberOfLines={1} style={styles.header}>
-          {title}
+          {Task.title}
         </Text>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity activeOpacity={0.6}>
+        <TouchableOpacity activeOpacity={0.6} onPress={()=>{handleDelete(Task.uuid)}}>
           <Foundation name="trash" size={24} color={colors.red} />
         </TouchableOpacity>
         <TouchableOpacity activeOpacity={0.6}>
